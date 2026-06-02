@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="title" content="SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation">
+  <meta name="description" content="SSD aligns the predictive objective with the natural 2D geometry of images, accelerating autoregressive image generation by up to 13.3x while preserving fidelity.">
+  <meta name="keywords" content="autoregressive image generation, speculative decoding, multi-token prediction, vision tokens, fast inference, SSD">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>SSD: Spatially Speculative Decoding for Autoregressive Image Generation</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    .publication-title { font-family: 'Google Sans', sans-serif; font-weight: 700; }
+    h2.title, h3.title { font-family: 'Google Sans', sans-serif; }
+    .publication-authors .author-block strong { color: #526db5; }
+    .hero.teaser .hero-body { padding-top: 1rem; padding-bottom: 1.5rem; }
+    section.hero.is-light { background-color: #f5f6fa; }
+    pre code { font-size: 0.85em; }
+    .accent { color: #526db5; font-weight: 600; }
+    .pill-tag {
+      display: inline-block; padding: 4px 12px; margin: 2px 4px;
+      background: #eef1f8; color: #3f538e; border-radius: 999px;
+      font-size: 0.85rem; font-weight: 500;
+    }
+    figcaption { color:#4a4a4a; font-size:0.95rem; line-height:1.55; margin-top:0.75rem; }
+    .stat-card {
+      background:#fff; border:1px solid #e6e9f1; border-radius:14px;
+      padding:1.5rem 1rem; text-align:center;
+      box-shadow:0 6px 18px rgba(20,20,30,.05);
+    }
+    .stat-card .num { font-family:'Google Sans',sans-serif; font-size:2.2rem; font-weight:700; color:#526db5; line-height:1; }
+    .stat-card .lbl { margin-top:0.5rem; color:#5b5b66; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.08em; }
+    .tag-chip {
+      display:inline-flex; align-items:center; padding:2px 12px; height:32px;
+      background:#eef1f8; color:#3f538e; border-radius:3px;
+      font-weight:600; margin-right:10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            SSD: Spatially Speculative Decoding<br>Accelerates Autoregressive Image Generation
+          </h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><strong>Shilong Xiang</strong><sup>1</sup>,</span>
+            <span class="author-block"><strong>Zirui Zhang</strong><sup>1</sup>,</span>
+            <span class="author-block"><strong>Lijun Yu</strong><sup>2</sup>,</span>
+            <span class="author-block"><strong>Chengzhi Mao</strong><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Rutgers University</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>2</sup>Google DeepMind</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-dark" style="pointer-events:none; opacity:0.75;">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code (coming soon)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-quote-left"></i></span>
+                  <span>BibTeX</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEASER -->
+<section class="hero teaser">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full">
+          <figure class="image">
+            <img src="assets/ssd_teaser.png" alt="SSD overview: spatially speculative decoding for 2D image tokens"
+                 style="max-width:88%; height:auto; display:block; margin:0 auto;">
+            <figcaption style="max-width:820px; margin:0.9rem auto 0; text-align:left;">
+              <span class="tag-chip">Vision is 2D</span>
+              Standard AR models flatten images into 1D sequences. SSD <strong>predicts both the horizontal and vertical neighbors</strong> in parallel — exploiting the intrinsic spatial locality of visual signals to accelerate generation by an order of magnitude.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABSTRACT -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Autoregressive models excel in visual generation by treating images as 1D sequences of discrete tokens, mirroring language modeling. However, this flattening discards the intrinsic 2D spatial locality of visual signals, creating severe computational bottlenecks during inference.
+          </p>
+          <p>
+            We introduce <strong>Spatially Speculative Decoding (SSD)</strong>, a framework that aligns the predictive objective with the natural geometry of images. Rather than predicting only the immediate next token in a 1D sequence, our model simultaneously predicts the adjacent horizontal token and the token directly below it. By capitalizing on this 2D spatial correlation, spatially speculative decoding overcomes the memory wall in visual inference.
+          </p>
+          <p>
+            Our approach accelerates autoregressive image generation by up to <span class="accent">13.3×</span> while maintaining high fidelity on DPG-Bench and GenEval. Our results suggest that respecting the underlying geometry of vision unlocks massive computational efficiencies, paving the way for real-time, high-resolution autoregressive generative models.
+          </p>
+        </div>
+
+        <div class="columns is-mobile is-centered" style="margin-top:1rem;">
+          <div class="column is-one-third"><div class="stat-card"><div class="num">13.3×</div><div class="lbl">Inference Speedup</div></div></div>
+          <div class="column is-one-third"><div class="stat-card"><div class="num">O(n)</div><div class="lbl">Decoding Complexity</div></div></div>
+          <div class="column is-one-third"><div class="stat-card"><div class="num">2D</div><div class="lbl">Multi-Token Pred.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Method: Drafting in Two Spatial Directions</h2>
+        <p class="subtitle is-5 has-text-centered" style="max-width:780px; margin:0 auto 1.5rem;">
+          A lightweight 2D draft head proposes the horizontal <em>and</em> the vertical neighbor jointly; the base model then verifies an entire spatial block in parallel.
+        </p>
+        <figure class="image">
+          <img src="assets/ssd_method.png" alt="SSD method overview"
+               style="max-width:92%; height:auto; display:block; margin:0 auto; border-radius:8px;">
+          <figcaption style="max-width:820px; margin:0.9rem auto 0; text-align:left;">
+            By drafting in two spatial directions and verifying acceptance position-wise, SSD collapses inference complexity from <span class="accent">O(n²)</span> to <span class="accent">O(n)</span> without modifying the autoregressive backbone.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="section hero is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full">
+          <h2 class="title is-3 has-text-centered">Results</h2>
+          <p class="subtitle is-5 has-text-centered" style="max-width:780px; margin:0 auto 1.5rem;">
+            SSD matches the fidelity of the AR baseline on DPG-Bench and GenEval while running over an order of magnitude faster.
+          </p>
+
+          <div class="card" style="border-radius:14px; box-shadow:0 12px 30px rgba(15,23,42,0.08); overflow:hidden;">
+            <div class="card-image" style="background: linear-gradient(135deg,#eef1f8,#f8faff);">
+              <figure class="image" style="padding:1.25rem; max-width:900px; margin:0 auto;">
+                <img src="assets/ssd_verify.png" alt="SSD vs AR comparison" style="border-radius:10px;">
+              </figure>
+            </div>
+            <div class="card-content" style="padding:1rem 1.4rem 1.3rem;">
+              <p class="title is-5" style="margin-bottom:0.4rem;">SSD vs. Vanilla Autoregression</p>
+              <p class="content is-size-6" style="margin-bottom:0;">
+                Speed–quality trade-off: as the draft window expands across the 2D grid, SSD accelerates generation by up to 13.3× while preserving sample fidelity.
+              </p>
+            </div>
+          </div>
+
+          <div style="margin-top:2rem;">
+            <figure class="image">
+              <img src="assets/ssd_samples.png" alt="Qualitative samples"
+                   style="max-width:92%; height:auto; display:block; margin:0 auto; border-radius:8px;">
+              <figcaption style="max-width:820px; margin:0.9rem auto 0; text-align:center;">
+                Qualitative samples generated with SSD — visually indistinguishable from vanilla AR decoding at a fraction of the inference cost.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BIBTEX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+<pre><code>@article{xiang2026ssd,
+  title   = {SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation},
+  author  = {Xiang, Shilong and Zhang, Zirui and Yu, Lijun and Mao, Chengzhi},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This page was built using the
+            <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
+            You are free to borrow the structure of this website; we ask that you link back to the original template in the footer.<br>
+            Licensed under a
+            <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
