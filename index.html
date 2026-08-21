@@ -100,6 +100,81 @@
   </div>
 </section>
 
+<!-- NFE RACE -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">One Forward-Pass Budget, Six Decoders</h2>
+        <p class="has-text-centered" style="max-width:820px; margin:0 auto 1.5rem; color:#4a4a4a;">
+          Same prompt, same seed, same Janus-Pro-7B backbone. Every panel is advanced by the
+          <em>same</em> number of backbone forward evaluations (NFE), so at any instant the row
+          shows what each decoder has produced for an identical compute budget.
+        </p>
+
+        <figure class="image">
+          <video autoplay loop muted playsinline poster="assets/ssd_nfe_race_poster.jpg"
+                 style="width:100%; max-width:820px; display:block; margin:0 auto; border-radius:8px;">
+            <source src="assets/ssd_nfe_race.mp4" type="video/mp4">
+            <img src="assets/ssd_nfe_race.gif" alt="Six decoders advancing on one shared forward-pass budget">
+          </video>
+          <figcaption style="max-width:820px; margin:0.9rem auto 0; text-align:left;">
+            <span class="tag-chip">Animation</span>
+            <strong>NFE-aligned decoding on Janus-Pro-7B.</strong>
+            Ungenerated tokens are shown as flat noise; drafted-but-unverified blocks are outlined
+            in amber. On this prompt SSD completes the 576-token image in <strong>80 forward
+            passes</strong>, while the strongest prior accelerators need 156&ndash;504 and plain AR
+            needs 576. SSD is already past the halfway mark at NFE&nbsp;38, when AR has committed
+            38 of 576 tokens.
+          </figcaption>
+        </figure>
+
+        <div class="table-container" style="margin-top:2rem;">
+          <table class="table is-fullwidth is-narrow is-hoverable" style="max-width:820px; margin:0 auto; font-size:0.9rem;">
+            <caption style="caption-side:top; text-align:left; padding-bottom:0.6rem; color:#4a4a4a;">
+              DPG-Bench &mdash; the same six methods on all three backbones, averaged over the full benchmark.
+            </caption>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th class="has-text-right">Latency&nbsp;&darr;</th>
+                <th class="has-text-right">Step&nbsp;&uarr;</th>
+                <th class="has-text-right">Latency&nbsp;&uarr;</th>
+                <th class="has-text-right">DPG Overall&nbsp;&uarr;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="background:#f5f6fa; font-weight:600;">Janus-Pro (7B)</td></tr>
+              <tr><td>Autoregressive</td><td class="has-text-right">7.87s</td><td class="has-text-right">1.00×</td><td class="has-text-right">1.00×</td><td class="has-text-right">84.23</td></tr>
+              <tr><td>SJD</td><td class="has-text-right">5.25s</td><td class="has-text-right">1.81×</td><td class="has-text-right">1.50×</td><td class="has-text-right">84.01</td></tr>
+              <tr><td>GSD</td><td class="has-text-right">3.31s</td><td class="has-text-right">3.07×</td><td class="has-text-right">2.38×</td><td class="has-text-right">82.97</td></tr>
+              <tr><td>LANTERN</td><td class="has-text-right">9.32s</td><td class="has-text-right">1.17×</td><td class="has-text-right">0.84×</td><td class="has-text-right">84.07</td></tr>
+              <tr><td>ZipAR</td><td class="has-text-right">3.04s</td><td class="has-text-right">2.76×</td><td class="has-text-right">2.59×</td><td class="has-text-right">83.78</td></tr>
+              <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>1.38s</strong></td><td class="has-text-right"><strong>7.20×</strong></td><td class="has-text-right"><strong>5.70×</strong></td><td class="has-text-right">83.40</td></tr>
+
+              <tr><td colspan="5" style="background:#f5f6fa; font-weight:600;">Lumina-mGPT (7B)</td></tr>
+              <tr><td>Autoregressive</td><td class="has-text-right">96.23s</td><td class="has-text-right">1.00×</td><td class="has-text-right">1.00×</td><td class="has-text-right">76.30</td></tr>
+              <tr><td>SJD</td><td class="has-text-right">61.08s</td><td class="has-text-right">2.23×</td><td class="has-text-right">1.58×</td><td class="has-text-right">74.03</td></tr>
+              <tr><td>GSD</td><td class="has-text-right">38.23s</td><td class="has-text-right">2.89×</td><td class="has-text-right">2.52×</td><td class="has-text-right">73.37</td></tr>
+              <tr><td>LANTERN</td><td class="has-text-right">59.00s</td><td class="has-text-right">2.00×</td><td class="has-text-right">1.63×</td><td class="has-text-right">74.45</td></tr>
+              <tr><td>ZipAR</td><td class="has-text-right">36.45s</td><td class="has-text-right">2.94×</td><td class="has-text-right">2.64×</td><td class="has-text-right">74.62</td></tr>
+              <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>13.09s</strong></td><td class="has-text-right"><strong>8.40×</strong></td><td class="has-text-right"><strong>7.35×</strong></td><td class="has-text-right">74.57</td></tr>
+
+              <tr><td colspan="5" style="background:#f5f6fa; font-weight:600;">Emu3 (8B)</td></tr>
+              <tr><td>Autoregressive</td><td class="has-text-right">281.87s</td><td class="has-text-right">1.00×</td><td class="has-text-right">1.00×</td><td class="has-text-right">78.69</td></tr>
+              <tr><td>SJD</td><td class="has-text-right">260.41s</td><td class="has-text-right">2.24×</td><td class="has-text-right">1.08×</td><td class="has-text-right">78.38</td></tr>
+              <tr><td>GSD</td><td class="has-text-right">97.07s</td><td class="has-text-right">3.46×</td><td class="has-text-right">2.90×</td><td class="has-text-right">77.57</td></tr>
+              <tr><td>LANTERN</td><td class="has-text-right">182.50s</td><td class="has-text-right">2.16×</td><td class="has-text-right">1.54×</td><td class="has-text-right">76.12</td></tr>
+              <tr><td>ZipAR</td><td class="has-text-right">79.71s</td><td class="has-text-right">5.41×</td><td class="has-text-right">3.54×</td><td class="has-text-right">73.36</td></tr>
+              <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>25.55s</strong></td><td class="has-text-right"><strong>14.34×</strong></td><td class="has-text-right"><strong>11.03×</strong></td><td class="has-text-right">76.03</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- TEASER -->
 <section class="hero teaser">
   <div class="hero-body">
@@ -117,64 +192,6 @@
               (c) Our SSD aligns the predictive objective with the intrinsic geometry of images and drafts entire spatial blocks in parallel. This reduces the number of backbone forward evaluations and alleviates the memory bottleneck of autoregressive decoding. Right: Applied to Emu3 (8B), this geometric shift yields a <strong>11.03×</strong> speedup while preserving high-resolution visual fidelity.
             </figcaption>
           </figure>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- NFE RACE -->
-<section class="section">
-  <div class="container is-max-widescreen">
-    <div class="columns is-centered">
-      <div class="column is-full">
-        <h2 class="title is-3 has-text-centered">One Forward-Pass Budget, Six Decoders</h2>
-        <p class="has-text-centered" style="max-width:820px; margin:0 auto 1.5rem; color:#4a4a4a;">
-          Same prompt, same seed, same Janus-Pro-7B backbone. Every panel is advanced by the
-          <em>same</em> number of backbone forward evaluations (NFE), so at any instant the row
-          shows what each decoder has produced for an identical compute budget.
-        </p>
-
-        <figure class="image">
-          <video autoplay loop muted playsinline poster="assets/ssd_nfe_race_poster.jpg"
-                 style="width:100%; max-width:1180px; display:block; margin:0 auto; border-radius:10px;">
-            <source src="assets/ssd_nfe_race.mp4" type="video/mp4">
-            <img src="assets/ssd_nfe_race.gif" alt="Six decoders advancing on one shared forward-pass budget">
-          </video>
-          <figcaption style="max-width:900px; margin:0.9rem auto 0; text-align:left;">
-            <span class="tag-chip">Animation</span>
-            <strong>NFE-aligned decoding on Janus-Pro-7B.</strong>
-            Ungenerated tokens are shown as flat noise; drafted-but-unverified blocks are outlined
-            in amber. On this prompt SSD completes the 576-token image in <strong>80 forward
-            passes</strong>, while the strongest prior accelerators need 156&ndash;504 and plain AR
-            needs 576. SSD is already past the halfway mark at NFE&nbsp;38, when AR has committed
-            38 of 576 tokens.
-          </figcaption>
-        </figure>
-
-        <div class="table-container" style="margin-top:2rem;">
-          <table class="table is-fullwidth is-narrow is-hoverable" style="max-width:900px; margin:0 auto; font-size:0.92rem;">
-            <caption style="caption-side:top; text-align:left; padding-bottom:0.6rem; color:#4a4a4a;">
-              DPG-Bench, Janus-Pro-7B &mdash; the same six methods, averaged over the full benchmark.
-            </caption>
-            <thead>
-              <tr>
-                <th>Method</th>
-                <th class="has-text-right">Latency&nbsp;&darr;</th>
-                <th class="has-text-right">Step&nbsp;&uarr;</th>
-                <th class="has-text-right">Latency&nbsp;&uarr;</th>
-                <th class="has-text-right">DPG Overall&nbsp;&uarr;</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Autoregressive</td><td class="has-text-right">7.87s</td><td class="has-text-right">1.00×</td><td class="has-text-right">1.00×</td><td class="has-text-right">84.23</td></tr>
-              <tr><td>SJD</td><td class="has-text-right">5.25s</td><td class="has-text-right">1.81×</td><td class="has-text-right">1.50×</td><td class="has-text-right">84.01</td></tr>
-              <tr><td>GSD</td><td class="has-text-right">3.31s</td><td class="has-text-right">3.07×</td><td class="has-text-right">2.38×</td><td class="has-text-right">82.97</td></tr>
-              <tr><td>LANTERN</td><td class="has-text-right">9.32s</td><td class="has-text-right">1.17×</td><td class="has-text-right">0.84×</td><td class="has-text-right">84.07</td></tr>
-              <tr><td>ZipAR</td><td class="has-text-right">3.04s</td><td class="has-text-right">2.76×</td><td class="has-text-right">2.59×</td><td class="has-text-right">83.78</td></tr>
-              <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>1.38s</strong></td><td class="has-text-right"><strong>7.20×</strong></td><td class="has-text-right"><strong>5.70×</strong></td><td class="has-text-right">83.40</td></tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -236,33 +253,6 @@
       <div class="columns is-centered">
         <div class="column is-full">
           <h2 class="title is-3 has-text-centered">Results</h2>
-
-          <div class="table-container" style="margin-bottom:2rem;">
-            <table class="table is-fullwidth is-narrow is-hoverable" style="max-width:760px; margin:0 auto; background:transparent; font-size:0.92rem;">
-              <caption style="caption-side:top; text-align:left; padding-bottom:0.6rem; color:#4a4a4a;">
-                DPG-Bench across three backbones. ZipAR is the fastest prior baseline on all three.
-              </caption>
-              <thead>
-                <tr>
-                  <th>Backbone</th><th>Method</th>
-                  <th class="has-text-right">Latency&nbsp;&darr;</th>
-                  <th class="has-text-right">Speedup&nbsp;&uarr;</th>
-                  <th class="has-text-right">DPG Overall&nbsp;&uarr;</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td rowspan="3">Janus-Pro (7B)</td><td>AR</td><td class="has-text-right">7.87s</td><td class="has-text-right">1.00×</td><td class="has-text-right">84.23</td></tr>
-                <tr><td>ZipAR</td><td class="has-text-right">3.04s</td><td class="has-text-right">2.59×</td><td class="has-text-right">83.78</td></tr>
-                <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>1.38s</strong></td><td class="has-text-right"><strong>5.70×</strong></td><td class="has-text-right">83.40</td></tr>
-                <tr><td rowspan="3">Lumina-mGPT (7B)</td><td>AR</td><td class="has-text-right">96.23s</td><td class="has-text-right">1.00×</td><td class="has-text-right">76.30</td></tr>
-                <tr><td>ZipAR</td><td class="has-text-right">36.45s</td><td class="has-text-right">2.64×</td><td class="has-text-right">74.62</td></tr>
-                <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>13.09s</strong></td><td class="has-text-right"><strong>7.35×</strong></td><td class="has-text-right">74.57</td></tr>
-                <tr><td rowspan="3">Emu3 (8B)</td><td>AR</td><td class="has-text-right">281.87s</td><td class="has-text-right">1.00×</td><td class="has-text-right">78.69</td></tr>
-                <tr><td>ZipAR</td><td class="has-text-right">79.71s</td><td class="has-text-right">3.54×</td><td class="has-text-right">73.36</td></tr>
-                <tr style="background:#eef1f8;"><td><strong>SSD (Ours)</strong></td><td class="has-text-right"><strong>25.55s</strong></td><td class="has-text-right"><strong>11.03×</strong></td><td class="has-text-right">76.03</td></tr>
-              </tbody>
-            </table>
-          </div>
 
           <div class="card" style="border-radius:14px; box-shadow:0 12px 30px rgba(15,23,42,0.08); overflow:hidden;">
             <div class="card-image" style="background: linear-gradient(135deg,#eef1f8,#f8faff);">
